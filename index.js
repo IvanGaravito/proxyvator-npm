@@ -27,8 +27,14 @@ clear = module.exports.clear = function (options) {
 	console.log(name + '::clear')
 
 	check()
+		.then(function (fullpath) {
+			return exec('npm config delete proxy')
+		})
 		.then(function () {
-			console.log(name + '::clear# Not implemented')
+			return exec('npm config delete https-proxy')
+		})
+		.then(function () {
+			console.log(name + '::clear# SUCCESS')
 		})
 		.catch(function (error) {
 			console.log(name + '::clear# ERROR:', error)
@@ -41,7 +47,7 @@ exec = module.exports.exec = function (cmd) {
 
 	deferred = Q.defer()
 
-	// Checking git program
+	// Executing npm program
 	execCP(cmd, function (error) {
 		if (error) {
 			deferred.reject(new Error(error))
@@ -57,8 +63,16 @@ setup = module.exports.setup = function (options) {
 	console.log(name + '::setup')
 
 	check()
+		.then(function (fullpath) {
+			return exec('npm config set proxy ' + options.http)
+		})
 		.then(function () {
-			console.log(name + '::setup# Not implemented')
+			if (options.https) {
+				return exec('npm config set https-proxy ' + options.https)
+			}
+		})
+		.then(function () {
+			console.log(name + '::setup# SUCCESS')
 		})
 		.catch(function (error) {
 			console.log(name + '::setup# ERROR:', error)
